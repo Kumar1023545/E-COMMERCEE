@@ -19,7 +19,6 @@ const Loginpage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
-  // const { setToken } = useContext(AuthContext);
   const {setToken}=useContext(AuthContext)
   const navigate = useNavigate();
 
