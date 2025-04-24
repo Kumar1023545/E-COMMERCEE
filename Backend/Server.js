@@ -56,6 +56,10 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/products', ProductRoutes);
 app.use('/api/auth', UserRoutes);
 
+app.get('/', (req, res) => {
+    res.send('✅ Backend API is running!');
+  });
+
 module.exports = app;
 
 
