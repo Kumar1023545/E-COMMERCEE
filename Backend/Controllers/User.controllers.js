@@ -27,19 +27,56 @@ const userRegister= async (req,res)=>{
     }
 }
 
-const userLogin= async (req,res)=>{
-    const { username, password } =req.body;
-    const user= await User.findOne({ $or: [{username},{email:username}]});
-    if(!user){
-        return res.status(400).send("invalid username or email")
+// const userLogin= async (req,res)=>{
+//     const { username, password } =req.body;
+//     const user= await User.findOne({ $or: [{username},{email:username}]});
+//     if(!user){
+//         return res.status(400).send("invalid username or email")
+//     }
+//     const validPassword= await bcrypt.compare(password,user.password)
+//     if(!validPassword){
+//         return res.status(400).send("invalid password")
+//     }
+//     const role=user.role
+//     const token=jwt.sign({userId:user._id},process.env.SECRET_KEY,{expiresIn:'1h'})
+//     res.send({ token, role })
+// }
+
+
+const userLogin = async (req, res) => {
+    try {
+      const { username, password } = req.body;
+  
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required." });
+      }
+  
+      console.log("Login attempt:", username);
+  
+      const user = await User.findOne({ $or: [{ username }, { email: username }] });
+  
+      if (!user) {
+        console.log("User not found.");
+        return res.status(400).json({ error: "Invalid username or email." });
+      }
+  
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        console.log("Incorrect password.");
+        return res.status(400).json({ error: "Invalid password." });
+      }
+  
+      const role = user.role;
+      const token = jwt.sign({ userId: user._id, role }, process.env.SECRET_KEY, { expiresIn: '1h' });
+  
+      console.log("Login successful.");
+      res.status(200).json({ token, role });
+  
+    } catch (err) {
+      console.error("Login error:", err);
+      res.status(500).json({ error: "Server error during login" });
     }
-    const validPassword= await bcrypt.compare(password,user.password)
-    if(!validPassword){
-        return res.status(400).send("invalid password")
-    }
-    const role=user.role
-    const token=jwt.sign({userId:user._id},process.env.SECRET_KEY,{expiresIn:'1h'})
-    res.send({ token, role })
-}
+  };
+  
 
 module.exports={ userRegister, userLogin };
